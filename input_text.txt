@@ -1,0 +1,175 @@
+
+
+# **Evolutionary Quantum Circuit Optimization with the ZX-Calculus**
+
+	Quantum circuits execute quantum algorithms by intentionally transforming information through a series of quantum gates (Marinescu & Marinescu, 2012). The primary advantage of quantum computers is quantum supremacy. Because quantum algorithms manipulate principles such as “entanglement, superposition, and interference”, they are able to achieve significant and sometimes exponential gains in time complexity over classical algorithms (Cerezo et al., 2022). However, the realization of the applications of quantum computing has been limited in the Noisy Intermediate-Scale Quantum (NISQ) era, which refers to our current time period in which quantum computers only support 50-100s of qubits with no guarantee of fault tolerance. Thus, researchers aim to optimize quantum circuits through methods maximizing fault-tolerance and minimizing complexity (Lau et al., 2022; Zaman et al., 2025).  
+	Genetic algorithms have been used to optimize different features of quantum circuits. Taking inspiration from evolution in nature, genetic algorithms repeatedly subject simulated individuals to mutations, crossover, and selection to eventually produce high quality solutions (Rasconi & Oddi, 2019). Additionally, researchers have also used the ZX-calculus for circuit optimization, especially in reducing non-clifford T-gates (Staudacher et al., 2023). The ZX-calculus is a more generalized graphical language that describes quantum operations, and graphs of the ZX-calculus are called ZX-diagrams. Circuits can easily be converted to diagrams, but it is more difficult to convert diagrams to circuits, which is done through a process called extraction (Barnes, 2020). Therefore, considering that the two representations have very different structures, optimizing diagrams may reveal optimized circuits that would otherwise be highly difficult to discover from the perspective of the circuit’s structure.  
+	The integrated approach is to attempt optimization by using a genetic algorithm in which the individuals are diagrams. This method was implemented by Barnes (2020) and later by Ewen et al. (2025). However, one critical issue with the approach is slow performance, which demonstrates a need for significant optimization. Aside from implementation, the algorithmic side of the approach can be further developed with additional mutations, new crossover methods, and hyperparameter optimization. This led to the guiding research question: *What improvements can be made to evolutionary quantum circuit optimization with the ZX-calculus to compete with or outperform the currently best methods?*
+
+# **Literature Review**
+
+## **Quantum Circuit Optimization**
+
+	In the NISQ hardware era, quantum computers face several constraints that prevent the full application of many quantum algorithms. Analogous to how classical computers use logic gates on electrons, quantum computers use quantum gates to transform information encoded by qubits. However, each gate introduces more noise into the circuit, which can lead to unpredictable results as errors build up. Therefore, researchers aim to optimize quantum algorithms to mitigate hardware constraints and further the implementation of useful applications. This has typically been done by reducing gate count and depth while maintaining a high fidelity, or accuracy, to the original circuit (Karuppasamy et al., 2025).
+
+## **Genetic Algorithms**
+
+	The structure of genetic algorithms fits well with quantum circuit optimization problems. Two notable features that researchers aim to optimize are circuit depth, which refers to the number of time steps needed to complete the circuit, and fidelity, which refers to the accuracy to the ideal output state (Zhang et al., 2024; Sünkel et al., 2025). On circuits with 4 to 6 qubits,  Sünkel et al. (2025) showed that genetic algorithms were able to significantly reduce depth while maintaining high levels of fidelity. Similarly, Rasconi & Oddi (2019) applied genetic algorithms to the circuit compilation problem, which also aims to reduce depth. They observed that, as the problem size grew larger, the optimization done through the genetic algorithm grew stronger while the optimization done through greedy random sampling grew weaker.
+
+## **ZX-Calculus**
+
+	While genetic algorithms have been a well-established tool for optimization problems, the ZX-calculus has only recently gained popularity in the literature as a tool for circuit optimization (Staudacher et al., 2023). A ZX-diagram represents quantum operations with an undirected graph containing vertices and edges referred to as spiders and wires, respectively. Spiders are divided into two types: Z-spiders and X-spiders, which represent linear maps that perform rotations about the Z and X axis, respectively, on the Bloch sphere by a given angle.  
+Nodes can be connected through normal wires or Hadamard wires, analogous to the Hadamard gate used in quantum circuits (van de Wetering, 2020).  
+	Because of its simplification rules, the ZX-calculus has often been used by researchers to reduce the number of T gates (Staudacher et al., 2023). Other features can be optimized, too, as was done by Staudacher et al. (2023) who optimized the number of 2-qubit gates. In their approach, all possible semantic-preserving simplifications were scanned and one was selected. They proposed two algorithms for selection: greedy selection and random selection, and they showed that greedy selection outperformed random selection, demonstrating improvement in the reduction of 2-qubit gates over the best heuristic approaches. However, Riu et al. (2025) utilized reinforcement learning through proximal policy optimization (PPO), achieving significant improvements over other methods in smaller circuits less than 80 qubits. This shows that finding an algorithm that can efficiently search for optimal ZX-Calculus simplifications is not trivial.
+
+## **Integrated Approach**
+
+	The integrated approach is to utilize a genetic algorithm where the individuals are ZX-diagrams. By optimizing the diagrams, the algorithm ultimately aims to produce optimized circuit structures that would have otherwise been difficult to discover from the more confined structure of the standard circuit model. A dissertation by Barnes (2020) appears to be the first to introduce the method. Then, Ewen et al. (2025) expanded on the approach by applying it to the quantum architecture search of parameterized circuits for quantum machine learning.   
+	Both implementations by Barnes (2020) and Ewen et al. (2025) were done in the Python programming language, using the PyZX library for utilities related to the ZX-calculus. Notably, both found that performing the subroutines given by the PyZX library was slow. Barnes (2020) moved for implementation of faster solutions in future works, stating that the technology was “not optimised for quickly simulating our candidate quantum circuits”. Accordingly, the QuiZX library, implemented in the Rust programming language, was developed by Kissinger (2025), which offers a significant improvement in performance. Among other factors, Rust is a compiled language, so it can be expected that Rust will outperform Python in almost all aspects (Mroczek et al., 2025).  
+	The upgrade in efficiency opens the door to several opportunities to further develop the method. The implementation by Barnes (2020) utilized several hyperparameters, including mutation rate, crossover rate, initial population, elitism percentage, and tournament selection parameters. But Barnes (2020) stated that it was infeasible to use brute-force search methods like grid search to find optimal hyperparameters in a reasonable amount of time. Therefore, Barnes (2020) was forced to base their hyperparameters on trial and error or the literature when applicable, which demonstrates a notable gap in the literature. The increase in performance will help to mitigate the gap, but more computationally efficient methods can also be used to search for optimal hyperparameters.  
+	Additionally, the lack of development in crossover methods represents a gap in the knowledge. The crossover is an essential component to maintaining the diversity of the search space in genetic algorithms (Hassanat et al., 2019). While it is not implemented in the approach by Ewen et al. (2025), Barnes (2020) does propose a gate list crossover method. The crossover works by converting diagrams into lists of gates and the qubits they operate on, then splicing them together and converting them back into the graphical representation. But this approach has several intermediary steps, and it contrasts tree encoding methods that are often used in genetic programming, the use of genetic algorithms to evolve programs (Malik, 2019; Kumar, 2013). Furthermore, the proposed crossover method would not be usable on individuals that cannot be extracted into circuits, which contradicts the fundamental idea to search through solutions in their more flexible graphical forms. Therefore, new crossover methods must be developed that take advantage of the graphical structures of individuals, moving away from the reliance on their circuit representations.
+
+# **Methodology**
+
+The algorithm first identifies the goal circuit and creates its graphical representation, which will be referred to as the goal graph. Next, during population generation, individuals are first initialized as copies of the goal individual. If the approach is to be used for state preparation, then individuals can also be generated randomly. Then, the main body of the algorithm repeatedly subjects individuals to mutation, evaluation, selection, and reproduction, eventually producing highly optimized results. The current number of iterations of the main body is referred to as the generation, and data is logged to output files at the end of each generation. If the most fit individual of a generation rivals or exceeds the highest fit individual so far, the circuit’s QASM representation along with the number of gates is outputted.
+
+## **Mutations**
+
+	Mutations represent one change made to an individual’s graph. By randomly applying different mutations to individuals, the algorithm is able to explore different solutions. When creating algorithms for mutations, the impact on generalized flow (gFlow) is an important aspect to consider. GFlow is a property of open graphs that ensures a well-defined quantum operation is represented (Browne et al., 2007). Only diagrams with gFlow can easily be converted into quantum circuits (Backens et al., 2021). Non-semantic-preserving mutations that may not preserve gFlow, referred to as unsafe mutations, must be considered carefully as they may be detrimental to the algorithm. On the other hand, semantic neutral drift (SND) mutations may change the graph’s representation, but they preserve its semantics and function. Barnes (2020) showed that discarding diagrams that had lost their gFlow was more effective than keeping them with the hope that they could regain it through later mutations.  
+	Ewen et al. (2025), expanding onto the mutations developed by Barnes (2020), used both SND and unsafe mutations in their approach with a total of 9 mutations: local complementation, inverse local complementation, pivot, phase gadget addition, edge flip, edge addition, edge removal, edge swap, edge split, and full reduce. The same mutations were used in this work. During the mutation step, for each individual, a random mutation is selected with equal distribution to be applied to the individual. Also following the approach of Ewen et al. (2025), if a mutation causes the graph to become unextractable, it will retry up to 10 times.
+
+## **Evaluation**
+
+	The fitness function takes an individual as its input and outputs a numerical score measuring how fit or optimal the individual is based on the defined criteria. It is calculated as a weighted linear combination of fitness components. Therefore, arbitrary weights can be applied to different components based on how important they are in the ideal circuit, which varies depending on the needs of the algorithm’s user.
+
+### ***Approximation Error Component***
+
+	This component is responsible for keeping the function of the individuals similar to the original circuit. Therefore, it was assigned the highest weight of 15,000. The implementation by Barnes (2020) compares circuits on multiple test cases by computing the mean squared fidelity between the expected and actual probability distributions. However, this approach requires finding the tensor representation of both circuits, which comes with a memory cost that scales exponentially with the number of qubits (Nguyen et al., 2022).  
+Therefore, test cases were instead implemented by comparing the expected and actual simulated results of running the circuit. This approach makes it feasible to apply the approach on larger circuits, although the number of test cases must scale with circuit complexity. It may also be more fit considering the future of quantum computing, as function calls to simulated circuit executions can be easily substituted with calls to real quantum processing units (QPUs).  
+During initialization, test cases can be randomly generated or imported in order to maintain consistency between trials. When generating test cases, a random bitstring with even probabilities for 0 and 1 is created. The simulator then runs the goal circuit with the given input bitstring, and the result is recorded as the correct answer to the test case. While this approach introduces random errors, it is necessary to allow the individual circuits to learn non-deterministic probability distributions of the goal circuit, and error will be suppressed as the number of test cases scale.   
+The base total error is calculated as the number of test cases passed over the total number of test cases. If the base total error is greater than 45%, the component considers this as having 100% error in order to encourage a high baseline level of accuracy. Otherwise, the error is calculated as the square root of the base total error, which gives more reward to individuals with near perfect accuracy.
+
+### ***Depth Component***
+
+	This component aims to minimize the number of time steps required to complete execution of the quantum circuit (Zhang et al., 2024). Rasconi & Oddi (2019) applied genetic algorithms to the circuit compilation problem, which demonstrates that depth is an important factor in reducing the cost to execute circuits. This component was given a weight of 1,000.
+
+### ***One-Qubit Gates and Two-Qubit Gates Components***
+
+	This component represents one of the primary goals of circuit optimization: to reduce execution costs by reducing the number of gates. Because one-qubit gates are less expensive, the one-qubit and two-qubit gate components were given weights of 600 and 1,000, respectively.
+
+### ***Extract Fail Penalty Component***
+
+	If the extraction process fails for an individual, a penalty of 15,000 is applied. The purpose of the penalty is to discourage individuals that cannot be represented as circuits because those solutions will not be useful and because many fitness components cannot be evaluated without the circuit. However, these individuals still contribute to a diverse solution search, so they are merely discouraged through the fitness function instead of immediately discarded.
+
+## **Selection**
+
+	The selection step involves deciding which individuals will be carried over to the next generation. Following the approach of Barnes (2020), tournament selection and elitism were used. Elitism refers to selecting a portion of individuals with the highest fitness among the entire population to carry over to the next generation with no modifications, which helps to maintain the currently best solutions. The elitism percentage hyperparameter dictates the portion that elitism is applied to. This value must be carefully balanced to maintain good solutions while avoiding premature convergence. For the same reason, tournament selection randomly chooses some number of individuals from the rest of the population, dictated by the tournament size hyperparameter, and chooses the best from that group to carry over to the next generation. This type of selection lets some individuals with low fitness survive, which maintains the diversity of the solution search. 
+
+## **Graphical Crossovers**
+
+	The crossover operator is crucial to maintaining the diversity of the solution search (Hassanat et al., 2019). In the algorithm, crossover occurs during tournament selection with a probability dictated by the crossover rate hyperparameter. If it is decided that crossover will occur, another individual is selected through tournament selection to be the partner.  
+Crossover methods in the integrated approach may benefit from the graphical structure of individuals. As opposed to Barnes’s (2020) method of gate list crossover, a crossover method that uses graphs offers better performance by avoiding intermediary steps, including the conversion from graphs to circuits and from circuits to gate lists. Graphical methods also avoid additional encoding, such as the node list encoding that was required to execute Barnes’s (2020) approach. 
+
+### ***Simple Subgraph Replacement Crossover***
+
+The proposed simple subgraph replacement crossover operator replaces an induced subgraph in one parent with an induced subgraph from another parent. In the ZX-diagram G=(V,E) we assume each vertex vV has a type t(v){Z,X,B} where a vertex of type B is a boundary node, including input and output nodes (Ewen et al., 2025). Then, we define an internal node to be any node that (a) is not a boundary node, (b) has no immediate neighbors that are boundary nodes, and (c) has no 2-hop neighbors that are boundary nodes.  
+Given two graphs A and B, this crossover first removes a random induced subgraph from the internal vertices of A, removing a third of the vertices at maximum. It appends to A a random induced subgraph from the internal vertices of B, taken from at most a third of the vertices in B. The vertices in this appended subgraph are then randomly reconnected to internal vertices in A that were present before the crossover, until each vertex reaches the degree it once had in B. If the resulting graph cannot be extracted, the crossover retries up to a set maximum number of retries. It returns the graph even if it cannot be extracted on the last try.
+
+### ***Patch Replacement Crossover***
+
+	The simple subgraph replacement crossover often causes the resulting graph to become unextractable, even with several retries. Extracting and removing random induced subgraphs is able to easily break gFlow. With this in mind, another graphical crossover method was developed to better respect the structure of the diagram and maintain extractability.   
+	The proposed patch replacement crossover operator operates on two parent diagrams A and B, replacing a subgraph from A with a subgraph from B, but subject to a boundary compatibility constraint. Given a ZX-diagram G=(V,E), we define a patch PV to be a connected induced subgraph composed of only internal vertices. The external edges of a patch P are edges connecting vertices in P to edges outside of P in V \\ P. Accordingly, the boundary size is defined as |P| \= |{(u,v)E | uP, vP}|. For each patch, the algorithm looks for a corresponding cavity, a connected set of internal vertices whose number of external connections matches the boundary size of the patch. The algorithm is as follows.
+
+1. Create a clone of A. It is not necessary to clone B because it will not be mutated.  
+2. Find a patch and its external edges in B.  
+   1. Select a random internal node v0 in graph B.  
+   2. Build the patch by expanding from the current node using breadth-first-search. To implement this, three data structures are created: a list of interior nodes, a queue of nodes to explore next, and a set of visited nodes. A loop pops the node at the front of the queue and adds all non-visited internal node neighbors to the back of the queue. Each node is also added to the set of interior nodes PB.  
+   3. Stop the search when |PB| reaches the target size, which is determined to be a random integer in the range \[2,6\].  
+3. Identify the boundary edges P and the boundary size |P|. If |P| \=0 then the patch is an isolated island, so the current iteration is skipped.  
+4. Find a corresponding cavity in A that matches the boundary size.  
+   1. Instead of searching the entire space, pick 10 random starting nodes among internal nodes in graph A. If a cavity is not found at one starting point, we will iterate to the next starting point.  
+   2. Expand the cavity by adding non-visited internal nodes through breadth-first-search. At the same time, keep track of the boundary anchors, the nodes that are connected to the exterior nodes of the cavity.  
+   3. Return the cavity when the number of boundary anchors matches the target boundary size. Otherwise, the cavity is discarded if it is too large, which was implemented by discarding if the number of anchors exceeds two plus the target boundary size.  
+5. Delete the nodes of graph A that are in the cavity.  
+6. Append the patch onto graph A, preserving spider phases and edge types.  
+7. Now that the patch is floating inside graph A, shuffle the boundary anchors, then reconnect the external edges of the patch to the boundary anchors.  
+8. Attempt to extract graph A. If successful, return graph A. Otherwise, try again for some maximum number of tries. If unsuccessful on the last try, return the graph even if it cannot be extracted.
+
+## **Hyperparameter Optimization**
+
+	With improvements in performance, it was feasible to optimize hyperparameters using a Python script with the Optuna library in a reasonable amount of time. This library was chosen because it employs Bayesian optimization, which is useful when it is computationally expensive to run trials (Wang et al., 2023). Three hyperparameters were optimized: elitism rate, crossover rate, and tournament size. The population size parameter was not included because it can be expected that a larger population would lead to more optimal results, which would cause the optimizer to increase it as much as possible, slowing down performance. The score of a genetic algorithm was determined by the highest fitness in the final generation.
+
+## **Implementation**
+
+The primary implementation was written in Rust to obtain significant performance improvements over Python implementations. This was done in two areas: the genetic algorithm was written in Rust, and the QuiZX library was used instead of the PyZX library written in Python. This implementation also differs from previous methods in how population data is represented. While the code by Ewen et al. (2025) represented individuals with objects, this implementation takes inspiration from the entity-system-component architecture to separate members into contiguous vectors, boosting performance and facilitating parallel processing.
+
+# **Findings**
+
+As shown in Table 1, mutation performance was benchmarked to compare the average mutation runtimes in the implementation by Ewen et al. (2025) and the developed method. Mutations were averaged across 512 trials for higher accuracy. The speedup factor, calculated as the runtime of the developed method divided by the runtime of the method by Ewen et al. (2025), represents how many times faster the developed method is. The overall speedup factor of 9.679 assumes uniform distribution of mutation selection.
+
+**Table 1**  
+*Mutation Performance Comparison of Implementation by Ewen et al. (2025) and Developed Implementation*
+
+| Mutation | Method by Ewen et al. (2025) Runtime (ms) | Developed Method Runtime (ms) | Speedup Factor |
+| ----- | :---: | :---: | :---: |
+| Local Complementation | 5.1430 | 0.7897 | 6.5130 |
+| Inverse Local Complementation | 5.5861 | 0.0248 | 224.9120 |
+| Pivot | 8.9251 | 0.6417 | 13.9080 |
+| Phase Gadget Addition | 3.8307 | 0.0486 | 78.7680 |
+| Flip Edge | 4.5743 | 0.0119 | 385.7580 |
+| Add Edge | 3.4646 | 0.0096 | 360.4070 |
+| Remove Edge | 4.2766 | 0.0450 | 94.9520 |
+| Swap Edge | 4.6129 | 0.0023 | 1976.4110 |
+| Split Edge | 3.8308 | 0.0036 | 1061.1650 |
+| Full Reduce | 163.4195 | 19.8773 | 8.2210 |
+| Average | 20.7664 | 2.1455 | 9.6790 |
+
+	  
+Bayesian optimization was used with the Optuna library to optimize hyperparameters for the gate list crossover by Barnes (2020) and the two proposed graphical crossovers. The score for a trial was given by the highest fitness value among all individuals of all generations.
+
+**Table 2**  
+*Optimized Hyperparameters for Crossover Methods*
+
+| Crossover | Elitism | Crossover Rate | Tournament Size | Best Score |
+| ----- | :---: | :---: | :---: | :---: |
+| Subgraph Replacement | 0.3431 | 0.0040 | 8 | 1365.812 |
+| Patch Replacement | 0.0004 | 0.0591 | 6 | 1584.615 |
+| Gate List | 0.4723 | 0.1495 | 7 | 2509.615 |
+
+*Note.* For both crossover types, the optimizer ran for 256 trials, each trial having 128 generations with a population size of 100\. The number of test cases generated was 16\.  
+
+Using the hyperparameters for gate list crossover calculated in Table 2, the mod5\_4 circuit was optimized. It was then transpiled to the same gate set on the benchmark by Li et al. (2024), which is defined as {CNOT, Rz, H, X}. The original circuit had 63 total gates: 28 CNOT gates and 35 one-qubit gates. The transpiled circuit had 18 total gates: 8 CNOT gates and 10 one-qubit gates. As shown in Figure 1, IBM Composer was used to draw the circuit.
+
+**Figure 1**  
+*Optimized Mod5\_4 Circuit With 18 Gates*  
+![][image1]
+
+# **Discussion**
+
+As seen in table 1, the speedup factor was significant across all mutations, ranging from 6.513 in the local complementation mutation to 1976.411 in the swap edge mutation. The strongest gain in performance comes from optimization of the full reduce mutation, which had a speedup factor of 8.221. Assuming uniform distribution, the new implementation optimizes mutations to be 9.679 times faster overall. Some optimization comes from algorithmic improvements, but most are due to the inherently higher speed of Rust. Thus, the increase in performance makes it much more feasible to quickly run trials and mitigates the computational efficiency concerns voiced by Ewen et al. (2025) and Barnes (2020).  
+As seen in Table 2, results from hyperparameter optimization generally showed a high elitism and tournament size, which are likely due to the small number of generations. Subgraph replacement, path replacement, and gate list crossover had increasing crossover rates: 0.0040, 0.0591, and 0.1495, respectively. This corresponded with a trend of increasing best scores: 1365.812, 1584.615, and 2509.615, respectively. Therefore, it appears that the optimizer considered subgraph replacement crossover detrimental to the best score, which is likely because the crossover caused the graph to become unextractable, leading to a very low fitness score. On the other hand, the higher crossover rates for patch replacement and gate list crossover indicate that they were more beneficial to the results. Although the optimizer showed that gate list crossover is more effective for small numbers of qubits, graphical crossover methods will likely be more feasible for performance as circuits scale in practical contexts because the only encoding that they require is the graphical representation of the individual.  
+	As shown in Figure 2, the developed method was able to outperform currently best approaches in gate optimization. The developed method produced the lowest number of total gates, as well as the lowest number of one-qubit gates and CNOT gates. However, it is important to note that the fidelity is imperfect. Following the approach of Barnes (2020), the Bhattacharyya coefficient was computed to be 0.707107. This value measures the difference in the output probability distribution between the optimized and goal circuits, with a value of 1 meaning total accuracy and a value of 0 meaning total inaccuracy. Therefore, the circuit will perform better than a random control, but it will not model the goal circuit perfectly.
+
+**Figure 2**  
+*Mod5\_4 Optimizer Benchmark*  
+![][image2]  
+*Note*. Adapted from “Quarl: A learning-based quantum circuit optimizer,” by Z. Li et al., 2024, *Proceedings of the ACM on Programming Languages, 8*(OOPSLA1), 555–582. Additional data for the developed method are original. Methods with rotation merge (RM) combine Rz gates as a preprocessing step.
+
+## **Limitations**
+
+	As seen in Figure 3, the probability distribution of the optimized mod5\_4 circuit is different from that of the original mod5\_4 circuit. This represents one critical limitation of the approach: mutations are not always semantics-preserving, and selection does not guarantee full fidelity to the original circuit, so results do not always model the same probability distribution. However, if the method is applied in practical contexts for larger circuits, this limitation may be mitigated by an increased population size and a greater number of test cases. If needed, users may also adjust the fitness function to give more priority to fidelity, or they may select another circuit with higher fidelity but more gates from the many that are outputted in each run.
+
+**Figure 3**  
+*Probability Distributions of Optimized Mod5\_4 and Goal Mod5\_4*  
+![][image3]
+
+## **Ethics**
+
+	While this research poses minimal direct ethical risk, other considerations may arise from the broader impacts of quantum computing that are advanced by circuit optimization. As described by Mavroeidis et al. (2018), the primary concern is the vulnerability of our modern cryptography infrastructure. Shor’s algorithm has the potential to quickly breach RSA factorization and the discrete logarithm problem, which all modern public key encryption relies on. Grover’s algorithm is a more minor threat, but it is able to breach some symmetric encryption methods and find collisions in hash functions with less time complexity.   
+	To address the vulnerability, the National Institute of Standards and Technology (NIST) received 82 post-quantum algorithm submissions, designed to be resistant in the next age of quantum computers. The algorithms can be categorized into five types of methods: lattice-based, hash-based, isogeny-based, multivariate, and code-based. After four rounds of selection, NIST has extensively tested the security of the candidate algorithms and has publicly posted the finalists (Dam et al., 2023). In practice, Joseph et al. (2022) recommends that businesses adopt abstraction layers to incorporate quantum algorithms into a hybrid approach, which will be resistant towards both conventional and quantum attacks.
+
+# **Conclusion**
+
+	Evolutionary algorithms operating on ZX-diagrams show promise in progressing quantum circuit optimization. The transition to the Rust programming language and QuiZX library along with some algorithmic improvements resulted in a significant boost to performance, which enabled faster trials. Combining this with Bayesian optimization, the optimized hyperparameters addressed a significant gap in the literature. To further address the gap, novel graphical crossover methods were developed that take advantage of the structure of ZX-diagrams, making them more scalable for practical applications.   
+	With these improvements, the algorithm was able to produce a highly optimized design to model the mod5\_4 circuit, which showed improvement over currently best methods both in total gate count and CNOT gate count. However, total fidelity is not guaranteed, and parameters that guarantee high fidelity may result in larger circuits. Still, the method advances quantum circuit optimization, which will allow researchers to run quantum algorithms faster and at a lower cost. The method will also help researchers create algorithms more easily through efficient state preparation. Along with advancements in hardware, the method will contribute to the practical realization of quantum computing applications that are currently infeasible.  
+Further research should focus on integrating methods that may guide the evolutionary algorithm in a more optimal way, as was done by Ewen et al. (2025). For example, it may be interesting to use neural networks to guide which mutations are chosen and which subgraphs are selected during graphical crossovers. It will also be beneficial to develop new mutations, both semantics-preserving and unsafe, which will allow a more diverse range of structures to be searched. The fundamental idea to search individuals in a generalized graphical form is promising, but this limits the fitness function when evaluating graphs that cannot be extracted. Therefore, future research should also develop new fitness components that can be evaluated based on the graph of the individual instead of the circuit.
