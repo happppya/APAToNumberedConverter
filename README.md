@@ -1,13 +1,17 @@
 # APA To Numbered Converter
 
-This tool converts standard APA citation format of (Last, Date) to the numbered APA-like format required by JHSS.
+A Python utility that converts standard APA in-text citations (Author, Year) to the numbered APA-like format required by JHSS.
 
-Multiple authors and "et al." syntax is supported. But **for edge cases you need to do manual review!**
+Features:
+- Supports single authors, multiple authors, and et al. syntax.
+- Preserves markdown formatting for seamless Google Docs integration.
+
+Note: Complex string edge cases (such as possessive formatting or specific Unicode characters) may require manual overrides. See the Usage section below for handling these exceptions.
 
 # Usage
 
 Prepare your input files in the main directory:
-- **input_bibliography.txt**: Your original APA references, each citation on its own new line. See the file in this repo for the example.
+- **input_bibliography.txt**: Your original APA references, each citation on its own new line. See the file in this repo for the example. Alphabetical order is not needed.
 - **input_text.txt**: Your original APA paper. See the file in this repo for the example.
 
 If you are using Google Docs:
