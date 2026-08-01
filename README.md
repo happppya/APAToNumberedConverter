@@ -16,10 +16,10 @@ Prepare your input files in the main directory:
 
 If you are using Google Docs:
 - First separate your paper and references into two separate tabs
-- Go to File > Download as Markdown, in order to get both as separate markdown files
-- Open the two markdown files and copy paste their contents into the two respective input files
-- This way, your output will also be in markdown
-- Then, you can copy paste your output back into Google Docs with correct formatting with Right Click > Paste from Markdown
+- In the top-left corner, go to File > Download > Markdown (.md), in order to get both tabs (paper and references) as separate markdown files
+- Open the two markdown files and copy paste their contents into the two respective input files (input_bibliography.txt and input_text.txt)
+- This way, your output will also show up as markdown
+- Then, when you are done, you can copy paste your output back into Google Docs with correct formatting with Right Click > Paste from Markdown
 
 Run main.py.
 
