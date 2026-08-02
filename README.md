@@ -10,7 +10,7 @@ Note: Complex string edge cases (such as possessive formatting or specific Unico
 
 # Usage
 
-Prepare your input files in the main directory:
+Prepare your input files in the working directory:
 - **input_bibliography.txt**: Your original APA references, each citation on its own new line. See the file in this repo for the example. Alphabetical order is not needed.
 - **input_text.txt**: Your original APA paper. See the file in this repo for the example.
 
